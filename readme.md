@@ -4,14 +4,14 @@
   <a href="https://alist.nn.ci"><img height="100px" alt="logo" src="https://gitcode.net/qq_32394351/dr_py/-/raw/1fe0e082b1ceacc4469d7f175a605cc2edf0bab0/static/img/icon.png"/></a>
   <p><em>🗂️A webServer convert web and x5 movie sites to cms api data</em></p>
   <a href="https://gitcode.net/qq_32394351/dr_py/-/releases">
-    <img src="https://img.shields.io/badge/version-3.6.15-blue" alt="latest version" />
+    <img src="https://img.shields.io/badge/version-3.7.4-blue" alt="latest version" />
   </a>
   <a href="https://gitcode.net/qq_32394351/dr_py/-/issues">
     <img src="https://img.shields.io/badge/discussions-2-orange" alt="discussions" />
   </a>
 
   <a href="https://gitcode.net/qq_32394351/dr_py/-/releases">
-    <img src="https://img.shields.io/badge/downloads-1325-blue" alt="Downloads" />
+    <img src="https://img.shields.io/badge/downloads-2837-blue" alt="Downloads" />
   </a>
 
 
@@ -46,8 +46,25 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)   
+###### 2022/09/26
+- [X] 1.v3.7.16 芒果增加少儿分类,直播源更新修复
+###### 2022/09/25
+- [X] 1.v3.7.10 增加了自定义解析功能,解析.conf支持变量{{host}}
+- [X] 2.新增了 jiexi/无名.js作为示例,接受vipUrl返回realUrl
+- [X] 3.修复腾云驾雾并增加通用筛选
+- [X] 4.自建解析增加重定向方法,方便明面上隐藏真实来源的解析地址
+- [X] 5.自建js文件自动解析到配置
+- [X] 6.增加百忙无果源
+###### 2022/09/23
+- [X] 1.v3.7.5 优化了首图2模板的搜索定位以及几个相关的源
+- [X] 2.二级渲染功能拆分,js单独调用
+- [X] 3.v3.7.6 新增优酷源(pluto专用)
+- [X] 4.v3.7.7 新增酷云77源(pluto专用),新增猫了个咪源,优化request等方法的post参数传递,增加rc函数
+- [X] 5.v3.7.8 增加单一搜索无匹配关键字自动打印源码,注释进入二级详情页的日志打印
+- [X] 6.v3.7.9 增加了用户解析合并功能并处理了几个坏的解析(准备跑路,原因是感觉海阔又牛逼了)
 ###### 2022/09/22
 - [X] 1.v3.7.3修复静态文件阿里token没渲染的bug,修复数据库升级bug,优化app.py
+- [X] 2.v3.7.4修复自定义drives合并配置报错问题
 ###### 2022/09/21
 - [X] 1.未来功能增加显示和隐藏多选规则的实际逻辑，增加顺序字段等待有缘人
 - [X] 2.版本升级至3.7.0

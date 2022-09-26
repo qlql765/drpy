@@ -10,6 +10,7 @@ import js2py
 from utils.log import logger
 # from utils.web import get_interval,UA
 from utils.ua import UA,get_interval
+from flask import render_template_string
 
 def getRuleLists():
     base_path = os.path.dirname(os.path.abspath(__file__)) # 当前文件所在目录
@@ -57,33 +58,41 @@ def getRules(path='cache'):
             codes.append(new_code)
     newCodes = before + '\n'+ '\n'.join(codes)
     # print(newCodes)
-    ctx.execute(newCodes)
-    for i in range(len(js_path)):
-        rule_codes.append(ctx.eval(f'rule{i}'))
+    try:
+        ctx.execute(newCodes)
+        for i in range(len(js_path)):
+            rule_codes.append(ctx.eval(f'rule{i}'))
 
-    # print(rule_codes)
-    # print(type(rule_codes[0]),rule_codes[0])
-    # print(rule_codes[0].title)
-    # print(rule_codes[0].searchable)
-    # print(rule_codes[0].quickSearch)
-    new_rule_list = []
-    for i in range(len(rule_list)):
-        tmpObj = {
-            'name':rule_list[i],
-            'searchable':rule_codes[i].searchable or 0,
-            'quickSearch':rule_codes[i].quickSearch or 0,
-            'filterable':rule_codes[i].filterable or 0,
-        }
-        if rule_codes[i].multi:
-            tmpObj['multi'] = 1
-        new_rule_list.append(tmpObj)
-    # print(new_rule_list)
-    rules = {'list': new_rule_list, 'count': len(rule_list)}
+        # print(rule_codes)
+        # print(type(rule_codes[0]),rule_codes[0])
+        # print(rule_codes[0].title)
+        # print(rule_codes[0].searchable)
+        # print(rule_codes[0].quickSearch)
+        new_rule_list = []
+        for i in range(len(rule_list)):
+            tmpObj = {
+                'name':rule_list[i],
+                'searchable':rule_codes[i].searchable or 0,
+                'quickSearch':rule_codes[i].quickSearch or 0,
+                'filterable':rule_codes[i].filterable or 0,
+            }
+            if rule_codes[i].multi:
+                tmpObj['multi'] = 1
+            new_rule_list.append(tmpObj)
+        # print(new_rule_list)
+        rules = {'list': new_rule_list, 'count': len(rule_list)}
+    except Exception as e:
+        logger.info(f'装载js内置源列表失败,置空内置源')
+        rules = []
     logger.info(f'自动配置装载耗时:{get_interval(t1)}毫秒')
     return rules
 
-def jxTxt2Json(text:str):
-    data = text.strip().split('\n')
+def jxTxt2Json(text:str,host:str):
+    try:
+        data = render_template_string(text,host=host).strip().split('\n')
+    except Exception as e:
+        logger.info(f'jxTxt2Json发生错误:{e}')
+        data = []
     jxs = []
     for i in data:
         i = i.strip()
@@ -93,14 +102,14 @@ def jxTxt2Json(text:str):
                 jxs.append({
                     'name':dt[0],
                     'url':dt[1],
-                    'type':dt[2] if len(dt) > 2 else 0,
-                    'ua':dt[3] if len(dt) > 3 else UA,
+                    'type':dt[2] if len(dt) > 2 and dt[2] else 0,
+                    'ua':dt[3] if len(dt) > 3 and dt[3] else UA,
                 })
             except Exception as e:
                 logger.info(f'解析行有错误:{e}')
     return jxs
 
-def getJxs(path='js'):
+def getJxs(path='js',host=None):
     custom_jx = 'base/解析.conf'
     if not os.path.exists(custom_jx):
         with open(custom_jx,'w+',encoding='utf-8') as f1:
@@ -111,13 +120,24 @@ def getJxs(path='js'):
 虾米,https://dm.xmflv.com:4433/?url=
             """
             f1.write(msg)
+    base_path = 'jiexi'  # 自建解析目录
+    os.makedirs(base_path, exist_ok=True)
+    file_name = os.listdir(base_path)
+    file_name = list(filter(lambda x: str(x).endswith('.js') and str(x).find('模板') < 0, file_name))
+    # print(file_name)
+    jx_list = [file.replace('.js', '') for file in file_name]
+    # print(file_name)
+    # print(jx_list)
+    jx_str = '\n'.join([jx+',{{host}}'+f'/parse/api/{jx}.js?url=,1' for jx in jx_list])
+    # print(jx_str)
 
     with open(f'{path}/解析.conf',encoding='utf-8') as f:
         text = f.read()
-    jxs = jxTxt2Json(text)
+    text = jx_str + '\n' + text
+    jxs = jxTxt2Json(text,host)
     with open(custom_jx,encoding='utf-8') as f2:
         text = f2.read()
-    jxs2 = jxTxt2Json(text)
+    jxs2 = jxTxt2Json(text,host)
     jxs.extend(jxs2)
     print(f'共计{len(jxs)}条解析')
     return jxs
@@ -176,5 +196,10 @@ def gen_cache(path='txt/js/tg'):
 
 if __name__ == '__main__':
     print(getRuleLists())
-    print(gen_cache())
-    print(gen_cache('txt/js/18'))
+    # print(gen_cache())
+    # print(gen_cache('txt/js/18'))
+
+    custom_file = gen_cache() + '\n'+gen_cache('txt/js/18')
+    print(custom_file)
+    with open('custom.conf','w+',encoding='utf-8') as f:
+        f.write(custom_file)

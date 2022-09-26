@@ -70,8 +70,9 @@ class jsoup:
             parse = ' '.join([parse[i] if self.test(':eq|:lt|:gt', parse[i]) or i>=len(parse)-1 else f'{parse[i]}:eq(0)' for i in range(len(parse))])
         # print(f'pdfa:{parse}')
         doc = pq(html)
-        # return [item.html() for item in doc(parse).items()]
-        return [str(item) for item in doc(parse).items()]
+        res = [str(item) for item in doc(parse).items()]
+        # print(len(res),res)
+        return res
 
     def pd(self,html,parse:str):
         return self.pdfh(html,parse,True)
@@ -103,6 +104,7 @@ class jsoup:
                 ret = urljoin(self.MY_URL, ret)
             if ret:
                 break
+        # print(ret)
         return ret
 
     def pj(self, html, parse:str):
@@ -118,6 +120,7 @@ class jsoup:
                 return ''
         if not parse.startswith('$.'):
             parse = f'$.{parse}'
+        # print(html)
         # print(parse)
         ret = jsonpath(html,parse)
         # print(ret)
